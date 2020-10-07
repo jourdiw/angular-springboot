@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -35,25 +36,34 @@ public class HeroController {
      */
 
     @GetMapping("/heroes")
-    ResponseEntity<CollectionModel<EntityModel<Hero>>> all() {
+    ResponseEntity<CollectionModel<EntityModel<Hero>>> all(@RequestParam Map<String,String> searchParams) {
 
-        List<EntityModel<Hero>> heroes = StreamSupport.stream(repository.findAll().spliterator(), false)
+        List<Hero> heroesList;
+
+        if (searchParams.containsKey("name")) {
+            String nameQuery = searchParams.get("name");
+            heroesList = repository.findByNameContainingIgnoreCase(nameQuery);
+        } else {
+            heroesList = repository.findAll();
+        }
+
+        List<EntityModel<Hero>> heroes = StreamSupport.stream(heroesList.spliterator(), false)
                 .map(hero -> new EntityModel<>(hero,
-                        linkTo(methodOn(HeroController.class).one(hero.getId())).withSelfRel(),
-                        linkTo(methodOn(HeroController.class).all()).withRel("heroes")))
+                        linkTo(methodOn(HeroController.class).one(hero.getId(), searchParams)).withSelfRel().expand(),
+                        linkTo(methodOn(HeroController.class).all(searchParams)).withRel("heroes").expand()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new CollectionModel<>(heroes,
-                linkTo(methodOn(HeroController.class).all()).withSelfRel()));
+                linkTo(methodOn(HeroController.class).all(searchParams)).withSelfRel()));
     }
 
     @PostMapping("/heroes")
-    ResponseEntity newHero(@RequestBody Hero newHero) {
+    ResponseEntity newHero(@RequestBody Hero newHero, @RequestParam Map<String,String> searchParams) {
         try {
             Hero savedHero = repository.save(newHero);
 
             EntityModel<Hero> heroResource = new EntityModel<>(savedHero,
-                    linkTo(methodOn(HeroController.class).one(savedHero.getId())).withSelfRel());
+                    linkTo(methodOn(HeroController.class).one(savedHero.getId(), searchParams)).withSelfRel());
             return  ResponseEntity.created(new URI(heroResource.getRequiredLink(IanaLinkRelations.SELF).getHref()))
                     .body(heroResource);
         } catch (URISyntaxException e) {
@@ -69,12 +79,12 @@ public class HeroController {
      */
 
     @GetMapping("/heroes/{id}")
-    ResponseEntity<EntityModel<Hero>> one(@PathVariable long id) {
-
+    ResponseEntity<EntityModel<Hero>> one(@PathVariable long id, @RequestParam Map<String,String> searchParams) {
+        System.out.println("[one]" + id);
         return repository.findById(id)
                 .map(hero -> new EntityModel<>(hero,
-                        linkTo(methodOn(HeroController.class).one(hero.getId())).withSelfRel(),
-                        linkTo(methodOn(HeroController.class).all()).withRel("heroes")))
+                        linkTo(methodOn(HeroController.class).one(hero.getId(), searchParams)).withSelfRel(),
+                        linkTo(methodOn(HeroController.class).all(searchParams)).withRel("heroes")))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -87,13 +97,13 @@ public class HeroController {
      * @return
      */
     @PutMapping("/heroes/{id}")
-    ResponseEntity<?> updateHero(@RequestBody Hero newHero, @PathVariable long id) {
+    ResponseEntity<?> updateHero(@RequestBody Hero newHero, @PathVariable long id, @RequestParam Map<String,String> searchParams) {
 
         Hero heroToUpdate = newHero;
         heroToUpdate.setId(id);
         repository.save(heroToUpdate);
 
-        Link newlyCreatedLink = linkTo(methodOn(HeroController.class).one(id)).withSelfRel();
+        Link newlyCreatedLink = linkTo(methodOn(HeroController.class).one(id, searchParams)).withSelfRel();
 
         try {
             return ResponseEntity.noContent().location(new URI(newlyCreatedLink.getHref())).build();
