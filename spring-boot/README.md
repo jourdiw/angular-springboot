@@ -8,6 +8,6 @@ The following resources were used to construct the backend and to customize the 
 
 [Spring Boot + Hateoas Documentation](https://docs.spring.io/spring-hateoas/docs/current/reference/html/)
 
-[Spring Boot + Angular Documentatino and Tutorial](https://www.baeldung.com/spring-boot-angular-web)
+[Spring Boot + Angular Documentation and Tutorial](https://www.baeldung.com/spring-boot-angular-web)
 
 [Specific Example of Spring Boot + Hateoas](https://github.com/spring-projects/spring-hateoas-examples/blob/master/simplified/src/main/java/org/springframework/hateoas/examples/EmployeeController.java)
