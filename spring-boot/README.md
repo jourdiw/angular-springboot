@@ -1,12 +1,13 @@
 ## Resources used to construct backend
 
-https://spring.io/guides/gs/spring-boot/
+The following resources were used to construct the backend and to customize the backend for this specific project:
 
-https://www.baeldung.com/spring-boot-angular-web
+[Spring Boot Tutorial](https://spring.io/guides/gs/spring-boot/)
 
-https://spring.io/guides/tutorials/bookmarks/
+[Spring Boot Documentation and Tutorial for a REST application](https://spring.io/guides/tutorials/bookmarks/)
 
-https://github.com/spring-projects/spring-hateoas-examples/blob/master/simplified/src/main/java/org/springframework/hateoas/examples/EmployeeController.java
+[Spring Boot + Hateoas Documentation](https://docs.spring.io/spring-hateoas/docs/current/reference/html/)
 
-https://docs.spring.io/spring-hateoas/docs/current/reference/html/
+[Spring Boot + Angular Documentatino and Tutorial](https://www.baeldung.com/spring-boot-angular-web)
 
+[Specific Example of Spring Boot + Hateoas](https://github.com/spring-projects/spring-hateoas-examples/blob/master/simplified/src/main/java/org/springframework/hateoas/examples/EmployeeController.java)
